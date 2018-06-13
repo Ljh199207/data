@@ -25,7 +25,6 @@ public class MyLinkedList<AnyType> implements Iterable<AnyType> {
     public MyLinkedList(){
         doClear();
     }
-
     private void doClear() {
         beginMaker = new Node<AnyType>(null,null,null);
         endMaker = new Node<AnyType>(null,beginMaker,null);
@@ -50,13 +49,21 @@ public class MyLinkedList<AnyType> implements Iterable<AnyType> {
         add(size(),x);
         return  true;
     }
-
-    private void add(int idx, AnyType x) {
+    public void add(int idx, AnyType x) {
         addBefore(getNode(idx,0,size()),x);
     }
-
+    public AnyType get(int index)
+    {
+      return getNode(index).data;
+    }
+    public  AnyType set(int index,AnyType val){
+      Node<AnyType> p = getNode(index);
+      AnyType oldVal = p.data;
+      p.data=val;
+      return oldVal;
+    }
     private void addBefore(Node<AnyType> node, AnyType x) {
-        Node<AnyType> newNode = new Node<>(x,node.prev,node.next);
+        Node<AnyType> newNode = new Node<>(x,node.prev,node);
         newNode.prev.next =newNode;
         node.prev=newNode;
         theSize++;
@@ -84,16 +91,37 @@ public class MyLinkedList<AnyType> implements Iterable<AnyType> {
     private Node<AnyType> getNode(int idx) {
        return getNode(idx,0,size()-1);
     }
-
+    public AnyType remove(int index)
+    {
+        return remove(getNode(index));
+    }
+    private  AnyType remove(Node<AnyType> p)
+    {
+      p.next.prev=p.prev;
+      p.prev.next=p.next;
+      theSize--;
+      modCount++;
+      return p.data;
+    }
     @Override
     public Iterator<AnyType> iterator() {
-        return null;
+        return new MyLinkedListIterator<>();
     }
-
-    public void print()
+    private  class MyLinkedListIterator<AnyType> implements  Iterator<AnyType>
     {
-
+        private Node currentNode = beginMaker.next;
+        private int nextIndex = 0;
+        @Override
+        public boolean hasNext() {
+           return nextIndex!=size();
+        }
+        @Override
+        public AnyType next() {
+            AnyType data = (AnyType) currentNode.data;
+            currentNode= currentNode.next;
+            nextIndex++;
+            return data;
+        }
     }
-
 
 }
